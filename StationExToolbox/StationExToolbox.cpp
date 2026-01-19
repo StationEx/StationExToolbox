@@ -1,9 +1,25 @@
 #include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <memory>
 #include <print>
 
 #include "WorldXmlDocument.h"
 
 using namespace StationExToolbox;
+
+static std::unique_ptr<char[]> ReadFile(std::basic_ifstream<char>& stream, const std::size_t streamSize)
+{
+	stream.unsetf(std::ios::skipws);
+
+	const std::size_t bufferSize = streamSize + 1;
+	std::unique_ptr<char[]> buffer = std::make_unique_for_overwrite<char[]>(bufferSize);
+
+	stream.read(buffer.get(), streamSize);
+	buffer[bufferSize - 1] = '\0';
+
+	return buffer;
+}
 
 int main(int argc, const char* const argv[])
 {
@@ -13,26 +29,28 @@ int main(int argc, const char* const argv[])
 		return 0;
 	}
 
-	std::chrono::time_point startTime = std::chrono::high_resolution_clock::now();
+	std::filesystem::path pathArgument(argv[1]);
 
-	WorldXmlDocument* world;
-	
-	try
+	std::basic_ifstream<char> stream(pathArgument, std::ios::binary);
+	if (!stream.is_open())
 	{
-		world = new WorldXmlDocument(argv[1]);
-	}
-	catch (...)
-	{
-		world = nullptr;
-	}
-
-	if (world == nullptr)
-	{
-		std::println("Failed to open the specified file \"{}\".", argv[1]);
+		std::println("Failed to open file.");
 		return 1;
 	}
 
-	std::expected<Human, Error> result = world->GetHumanById(7724035);
+	std::unique_ptr<char[]> buffer = ReadFile(stream, std::filesystem::file_size(pathArgument));
+	stream.close();
+
+	std::chrono::time_point startTime = std::chrono::high_resolution_clock::now();
+
+	WorldXmlDocument* worldXml = new WorldXmlDocument(std::move(buffer));
+	if (!worldXml->Parse())
+	{
+		std::println("Failed to open and parse the specified file \"{}\".", argv[1]);
+		return 1;
+	}
+
+	std::expected<Human, Error> result = worldXml->GetHumanByReferenceId(7724035);
 	std::chrono::time_point endTime = std::chrono::high_resolution_clock::now();
 
 	std::println("Parse time was {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count());
