@@ -17,7 +17,7 @@ namespace StationExToolbox
 		inline static constexpr std::string_view Element = "ThingSaveData"sv;
 		inline static constexpr std::string_view ElementType = "HumanSaveData"sv;
 		inline static constexpr std::string_view ReferenceIdElement = "ReferenceId"sv;
-		inline static constexpr std::string_view NameElement = "Name"sv;
+		inline static constexpr std::string_view NameElement = "CustomName"sv;
 
 		inline Human(std::uint64_t referenceId, std::string_view name)
 			: referenceId(referenceId), name(std::move(name))

@@ -1,7 +1,6 @@
 <Solution>
   <Configurations>
     <Platform Name="x64" />
-    <Platform Name="x86" />
   </Configurations>
-  <Project Path="StationExToolbox/StationExToolbox.vcxproj" />
+  <Project Path="StationExToolbox/StationExToolbox.vcxproj" Id="495bd0f2-12cd-4a9f-b9b4-09bb5d28b0d1" />
 </Solution>
