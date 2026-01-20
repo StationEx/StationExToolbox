@@ -102,6 +102,14 @@ static bool ReadHumanFromNode(const XmlNode* const node, Human& human) noexcept
 
 	human.Name = std::string_view(nameNode->value(), nameNode->value_size());
 
+	const XmlNode* const stateNode = node->first_node(Human::StateElement.data(), Human::StateElement.size());
+	if (stateNode == nullptr)
+	{
+		return false;
+	}
+
+	human.State = std::string_view(stateNode->value(), stateNode->value_size());
+
 	const XmlNode* const positionNode = node->first_node(Human::PositionElement.data(), Human::PositionElement.size());
 	if (positionNode == nullptr || !ReadVector3FromNode(positionNode, human.Position))
 	{
