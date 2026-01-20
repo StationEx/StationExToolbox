@@ -8,6 +8,7 @@
 #include <charconv>
 #include <expected>
 #include <string>
+#include <vector>
 
 using XmlDocument = rapidxml::xml_document<char>;
 
@@ -40,6 +41,9 @@ namespace StationExToolbox
 
 			return true;
 		}
+
+		[[nodiscard]]
+		Error GetHumans(std::vector<Human>& humans) const noexcept;
 
 		[[nodiscard]]
 		Error GetHumanByReferenceId(const std::uint64_t referenceId, Human& entity) const noexcept;

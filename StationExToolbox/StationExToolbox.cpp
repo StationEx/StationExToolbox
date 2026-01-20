@@ -4,11 +4,17 @@
 #include <memory>
 #include <print>
 
+#include "args/args.hpp"
+
 #include "WorldXmlDocument.h"
 
 using namespace StationExToolbox;
 
-static std::unique_ptr<char[]> ReadFile(std::basic_ifstream<char>& stream, const std::size_t streamSize)
+static args::Group GlobalArguments("arguments");
+static args::ValueFlag<std::string> FileFlag(GlobalArguments, "file", "The path to the world.xml file.", { "f", "file" });
+static args::HelpFlag HelpFlag(GlobalArguments, "help", "Display this help menu.", { "h", "help" });
+
+static std::unique_ptr<char[]> ReadFile(std::basic_ifstream<char>& stream, const std::size_t streamSize) noexcept
 {
 	stream.unsetf(std::ios::skipws);
 
@@ -21,48 +27,80 @@ static std::unique_ptr<char[]> ReadFile(std::basic_ifstream<char>& stream, const
 	return buffer;
 }
 
-int main(int argc, const char* const argv[])
+static std::unique_ptr<WorldXmlDocument> GetWorldXmlDocument(std::filesystem::path path) noexcept
 {
-	if (argc != 2)
-	{
-		std::println("Usage: ./StationExToolbox [path]");
-		return 0;
-	}
-
-	std::filesystem::path pathArgument(argv[1]);
-
-	std::basic_ifstream<char> stream(pathArgument, std::ios::binary);
+	std::basic_ifstream<char> stream(path, std::ios::binary);
 	if (!stream.is_open())
 	{
-		std::println("Failed to open file.");
+		return nullptr;
+	}
+
+	return std::make_unique<WorldXmlDocument>(ReadFile(stream, std::filesystem::file_size(path)));
+}
+
+static void ListPlayersCommand() noexcept
+{
+	std::unique_ptr<WorldXmlDocument> world = GetWorldXmlDocument(args::get(FileFlag));
+	if (world == nullptr)
+	{
+		std::println("Error: The save file could not be opened.");
+		return;
+	}
+
+	if (!world->Parse())
+	{
+		std::println("Error: The save file is malformed.");
+		return;
+	}
+
+	std::vector<Human> humans;
+	if (world->GetHumans(humans) != Error::None)
+	{
+		std::println("Error: The save file is in an unexpected format.");
+		return;
+	}
+
+	for (const Human& human : humans)
+	{
+		std::println("[{}] \"{}\" ({}) is {} at ({}, {}, {})",
+			human.ReferenceId, human.Name, human.SteamId, human.State, human.Position.X, human.Position.Y, human.Position.Z);
+	}
+}
+
+static void HandlePlayersCommand(args::Subparser& parser) noexcept
+{
+	args::Positional<std::string> actionArgument(parser, "action", "list", args::Options::Required);
+	parser.Parse();
+
+	std::string action = args::get(actionArgument);
+
+	if (action == "list")
+	{
+		ListPlayersCommand();
+	}
+}
+
+int main(int argc, const char* const argv[])
+{
+	args::ArgumentParser parser("StationEx Toolbox - A utility for manipulating your Stationeers saves.");
+	args::Command playersCommand(parser, "players", "Commands related to players", &HandlePlayersCommand);
+
+	args::GlobalOptions globalOptions(parser, GlobalArguments);
+
+	try
+	{
+		parser.ParseCLI(argc, argv);
+	}
+	catch (const args::Help&)
+	{
+		std::println("{}", parser.Help());
+		return 0;
+	}
+	catch (const args::Error& e)
+	{
+		std::println("Error: {}", e.what());
+		std::println("{}", parser.Help());
 		return 1;
-	}
-
-	std::unique_ptr<char[]> buffer = ReadFile(stream, std::filesystem::file_size(pathArgument));
-	stream.close();
-
-	std::chrono::time_point startTime = std::chrono::high_resolution_clock::now();
-
-	WorldXmlDocument* worldXml = new WorldXmlDocument(std::move(buffer));
-	if (!worldXml->Parse())
-	{
-		std::println("Failed to parse the specified file \"{}\".", argv[1]);
-		return 1;
-	}
-
-	Human human;
-	Error error = worldXml->GetHumanByReferenceId(7724035, human);
-	std::chrono::time_point endTime = std::chrono::high_resolution_clock::now();
-
-	std::println("Parse time was {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count());
-
-	if (error)
-	{
-		std::println("Couldn't find player.");
-	}
-	else
-	{
-		std::println("Found player \"{}\" with reference id {}.", human.Name, human.ReferenceId);
 	}
 
 	return 0;

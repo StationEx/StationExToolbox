@@ -6,7 +6,6 @@
 #include "Quaternion.h"
 
 #include <cstdint>
-#include <optional>
 
 using XmlNode = rapidxml::xml_node<char>;
 using XmlAttribute = rapidxml::xml_attribute<char>;
@@ -151,6 +150,35 @@ static XmlNode* GetThingContainerNode(const XmlDocument& document) noexcept
 	}
 
 	return worldDataNode->first_node(Things::Element.data(), Things::Element.size());
+}
+
+Error WorldXmlDocument::GetHumans(std::vector<Human>& humans) const noexcept
+{
+	const XmlNode* const things = GetThingContainerNode(this->document);
+	if (things == nullptr)
+	{
+		return Error::SaveFormatInvalid;
+	}
+
+	const XmlNode* thingNode = things->first_node(Human::Element.data(), Human::Element.size());
+	while (thingNode != nullptr)
+	{
+		const XmlAttribute* const thingTypeAttribute = thingNode->first_attribute("xsi:type");
+		if (thingTypeAttribute != nullptr && std::string_view(thingTypeAttribute->value(), thingTypeAttribute->value_size()) == Human::ElementType)
+		{
+			Human human;
+			if (!ReadHumanFromNode(thingNode, human))
+			{
+				return Error::EntityFormatInvalid;
+			}
+
+			humans.push_back(std::move(human));
+		}
+
+		thingNode = thingNode->next_sibling(Human::Element.data(), Human::Element.size());
+	}
+
+	return Error::None;
 }
 
 Error WorldXmlDocument::GetHumanByReferenceId(const std::uint64_t referenceId, Human& human) const noexcept
