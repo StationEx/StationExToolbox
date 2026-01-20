@@ -50,19 +50,19 @@ int main(int argc, const char* const argv[])
 		return 1;
 	}
 
-	std::expected<Human, Error> result = worldXml->GetHumanByReferenceId(7724035);
+	Human human;
+	Error error = worldXml->GetHumanByReferenceId(7724035, human);
 	std::chrono::time_point endTime = std::chrono::high_resolution_clock::now();
 
 	std::println("Parse time was {}ms", std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count());
 
-	if (result.has_value())
+	if (error)
 	{
-		Human human = result.value();
-		std::println("Found player \"{}\" with reference id {}.", human.GetName(), human.GetReferenceId());
+		std::println("Couldn't find player.");
 	}
 	else
 	{
-		std::println("Couldn't find player.");
+		std::println("Found player \"{}\" with reference id {}.", human.Name, human.ReferenceId);
 	}
 
 	return 0;

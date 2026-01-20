@@ -42,6 +42,6 @@ namespace StationExToolbox
 		}
 
 		[[nodiscard]]
-		std::expected<Human, Error> GetHumanByReferenceId(const std::uint64_t referenceId) const noexcept;
+		Error GetHumanByReferenceId(const std::uint64_t referenceId, Human& entity) const noexcept;
 	};
 }

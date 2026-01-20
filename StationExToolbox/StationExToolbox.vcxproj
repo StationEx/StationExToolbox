@@ -84,7 +84,9 @@
   <ItemGroup>
     <ClInclude Include="Error.h" />
     <ClInclude Include="Human.h" />
+    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Things.h" />
+    <ClInclude Include="Vector3.h" />
     <ClInclude Include="WorldData.h" />
     <ClInclude Include="WorldXmlDocument.h" />
   </ItemGroup>

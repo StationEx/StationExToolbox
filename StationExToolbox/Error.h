@@ -4,7 +4,7 @@ namespace StationExToolbox
 {
 	enum Error
 	{
-		Unspecified,
+		None,
 		SaveFormatInvalid,
 		EntityFormatInvalid,
 		EntityNotFound
