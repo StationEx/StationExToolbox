@@ -6,6 +6,7 @@
 #include "Quaternion.h"
 
 #include <cstdint>
+#include <optional>
 
 using XmlNode = rapidxml::xml_node<char>;
 using XmlAttribute = rapidxml::xml_attribute<char>;
@@ -15,17 +16,17 @@ using namespace StationExToolbox;
 static bool ReadUInt64FromNode(const XmlNode* const node, std::uint64_t& value) noexcept
 {
 	const char* const nodeValueEnd = node->value() + node->value_size();
-	auto [ptr, _] = std::from_chars(node->value(), nodeValueEnd, value);
+	auto [ptr, ec] = std::from_chars(node->value(), nodeValueEnd, value);
 
-	return ptr == nodeValueEnd;
+	return (ec == std::errc() && ptr == nodeValueEnd);
 }
 
 static bool ReadSingleFromNode(const XmlNode* const node, float& value) noexcept
 {
 	const char* const nodeValueEnd = node->value() + node->value_size();
-	auto [ptr, _] = std::from_chars(node->value(), nodeValueEnd, value);
+	auto [ptr, ec] = std::from_chars(node->value(), nodeValueEnd, value);
 
-	return ptr == nodeValueEnd;
+	return (ec == std::errc() && ptr == nodeValueEnd);
 }
 
 static bool ReadVector3FromNode(const XmlNode* const node, Vector3& value) noexcept
@@ -86,6 +87,22 @@ static bool ReadHumanFromNode(const XmlNode* const node, Human& human) noexcept
 	if (referenceIdNode == nullptr || !ReadUInt64FromNode(referenceIdNode, human.ReferenceId))
 	{
 		return false;
+	}
+
+	const XmlNode* const parentReferenceIdNode = node->first_node(Human::ParentReferenceIdElement.data(), Human::ParentReferenceIdElement.size());
+	if (parentReferenceIdNode == nullptr)
+	{
+		human.ParentReferenceId = std::nullopt;
+	}
+	else
+	{
+		std::uint64_t parentReferenceId;
+		if (!ReadUInt64FromNode(parentReferenceIdNode, parentReferenceId))
+		{
+			return false;
+		}
+
+		human.ParentReferenceId = parentReferenceId;
 	}
 
 	const XmlNode* const steamIdNode = node->first_node(Human::SteamIdElement.data(), Human::SteamIdElement.size());
