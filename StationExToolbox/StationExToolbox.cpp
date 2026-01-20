@@ -46,7 +46,7 @@ int main(int argc, const char* const argv[])
 	WorldXmlDocument* worldXml = new WorldXmlDocument(std::move(buffer));
 	if (!worldXml->Parse())
 	{
-		std::println("Failed to open and parse the specified file \"{}\".", argv[1]);
+		std::println("Failed to parse the specified file \"{}\".", argv[1]);
 		return 1;
 	}
 
