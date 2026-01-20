@@ -3,11 +3,11 @@
 #include "Human.h"
 #include "Error.h"
 
+#include "rapidxml/rapidxml.h"
+
 #include <charconv>
 #include <expected>
 #include <string>
-
-#include "rapidxml/rapidxml.h"
 
 using XmlDocument = rapidxml::xml_document<char>;
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Vector3.h"
+#include "Quaternion.h"
+
 #include <memory>
 #include <string_view>
 
@@ -14,9 +17,13 @@ namespace StationExToolbox
 		inline static constexpr std::string_view ReferenceIdElement = "ReferenceId"sv;
 		inline static constexpr std::string_view SteamIdElement = "OwnerSteamId"sv;
 		inline static constexpr std::string_view NameElement = "CustomName"sv;
+		inline static constexpr std::string_view PositionElement = "WorldPosition"sv;
+		inline static constexpr std::string_view RotationElement = "WorldRotation"sv;
 
 		std::uint64_t ReferenceId;
 		std::uint64_t SteamId;
 		std::string_view Name;
+		Vector3 Position;
+		Quaternion Rotation;
 	};
 }
