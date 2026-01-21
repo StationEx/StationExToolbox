@@ -2,15 +2,12 @@
 
 #include "Human.h"
 #include "Error.h"
-
-#include "rapidxml/rapidxml.h"
+#include "XmlHelper.h"
 
 #include <charconv>
 #include <expected>
 #include <string>
 #include <vector>
-
-using XmlDocument = rapidxml::xml_document<char>;
 
 namespace StationExToolbox
 {
@@ -30,16 +27,7 @@ namespace StationExToolbox
 		[[nodiscard]]
 		inline bool Parse() noexcept
 		{
-			try
-			{
-				this->document.parse<rapidxml::parse_non_destructive>(this->content.get());
-			}
-			catch (...)
-			{
-				return false;
-			}
-
-			return true;
+			return XmlHelper::TryParseContent(this->document, this->content.get());
 		}
 
 		[[nodiscard]]

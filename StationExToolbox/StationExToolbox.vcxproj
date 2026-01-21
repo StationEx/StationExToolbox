@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="StationExToolbox.cpp" />
+    <ClCompile Include="ThingSaveData.cpp" />
     <ClCompile Include="WorldXmlDocument.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -86,9 +87,11 @@
     <ClInclude Include="Human.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Things.h" />
+    <ClInclude Include="ThingSaveData.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="WorldData.h" />
     <ClInclude Include="WorldXmlDocument.h" />
+    <ClInclude Include="XmlHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
