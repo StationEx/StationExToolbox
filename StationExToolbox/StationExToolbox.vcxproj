@@ -81,6 +81,7 @@
     <ClCompile Include="StationExToolbox.cpp" />
     <ClCompile Include="ThingSaveData.cpp" />
     <ClCompile Include="WorldXmlDocument.cpp" />
+    <ClCompile Include="WorldXmlReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Error.h" />
@@ -91,6 +92,7 @@
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="WorldData.h" />
     <ClInclude Include="WorldXmlDocument.h" />
+    <ClInclude Include="WorldXmlReader.h" />
     <ClInclude Include="XmlHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

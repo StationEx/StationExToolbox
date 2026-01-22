@@ -1,13 +1,9 @@
 #pragma once
 
-#include "Human.h"
-#include "Error.h"
 #include "XmlHelper.h"
 
-#include <charconv>
-#include <expected>
-#include <string>
-#include <vector>
+#include <filesystem>
+#include <memory>
 
 namespace StationExToolbox
 {
@@ -15,25 +11,42 @@ namespace StationExToolbox
 	{
 		private:
 		std::unique_ptr<char[]> content;
-		XmlDocument document;
+		std::unique_ptr<XmlDocument> document;
 
 		public:
-		inline WorldXmlDocument(std::unique_ptr<char[]> content) noexcept
-			: content(std::move(content))
+		[[nodiscard]]
+		static WorldXmlDocument FromFile(std::filesystem::path path);
+
+		inline WorldXmlDocument(std::unique_ptr<char[]> content, std::unique_ptr<XmlDocument> document) noexcept
+			: content(std::move(content)),
+			document(std::move(document))
 		{
 
 		}
 
-		[[nodiscard]]
-		inline bool Parse() noexcept
+		inline WorldXmlDocument(WorldXmlDocument&& other) noexcept
+			: content(std::move(other.content)),
+			document(std::move(other.document))
 		{
-			return XmlHelper::TryParseContent(this->document, this->content.get());
+
 		}
 
-		[[nodiscard]]
-		Error GetHumans(std::vector<Human>& humans) const noexcept;
+		WorldXmlDocument(WorldXmlDocument&) = delete;
+		~WorldXmlDocument() noexcept = default;
+
+		inline WorldXmlDocument& operator =(WorldXmlDocument&& other) noexcept
+		{
+			if (this != &other)
+			{
+				this->document = std::move(other.document);
+			}
+
+			return *this;
+		}
+
+		inline WorldXmlDocument& operator =(const WorldXmlDocument&) = delete;
 
 		[[nodiscard]]
-		Error GetHumanByReferenceId(const std::uint64_t referenceId, Human& entity) const noexcept;
+		XmlNode* TryGetAllThingsElement() const noexcept;
 	};
 }

@@ -1,146 +1,46 @@
 #include "WorldXmlDocument.h"
 
-#include "WorldData.h"
-#include "Things.h"
-#include "Vector3.h"
-#include "Quaternion.h"
-#include "XmlHelper.h"
+#include <fstream>
+#include <filesystem>
+#include <stdexcept>
+#include <string_view>
 
-#include <cstdint>
+using namespace std::string_view_literals;
 
-using XmlNode = rapidxml::xml_node<char>;
-using XmlAttribute = rapidxml::xml_attribute<char>;
+static constexpr std::string_view WorldDataElement = "WorldData"sv;
+static constexpr std::string_view AllThingsElement = "AllThings"sv;
 
-using namespace StationExToolbox;
-
-static bool ReadHumanFromNode(const XmlNode* const node, Human& human) noexcept
+StationExToolbox::WorldXmlDocument StationExToolbox::WorldXmlDocument::FromFile(std::filesystem::path path)
 {
-	const XmlNode* const referenceIdNode = node->first_node(Human::ReferenceIdElement.data(), Human::ReferenceIdElement.size());
-	if (referenceIdNode == nullptr || !XmlHelper::TryGetUInt64(referenceIdNode, human.ReferenceId))
+	const std::size_t fileSize = std::filesystem::file_size(path);
+
+	std::basic_ifstream<char> stream(path, std::ios::binary);
+	if (!stream.is_open())
 	{
-		return false;
+		throw std::runtime_error("The specified file could not be opened.");
 	}
 
-	const XmlNode* const parentReferenceIdNode = node->first_node(Human::ParentReferenceIdElement.data(), Human::ParentReferenceIdElement.size());
-	if (parentReferenceIdNode == nullptr)
-	{
-		human.ParentReferenceId = std::nullopt;
-	}
-	else
-	{
-		std::uint64_t parentReferenceId;
-		if (!XmlHelper::TryGetUInt64(parentReferenceIdNode, parentReferenceId))
-		{
-			return false;
-		}
+	stream.unsetf(std::ios::skipws);
 
-		human.ParentReferenceId = parentReferenceId;
-	}
+	const std::size_t bufferSize = fileSize + 1;
+	std::unique_ptr<char[]> content = std::make_unique_for_overwrite<char[]>(bufferSize);
 
-	const XmlNode* const steamIdNode = node->first_node(Human::SteamIdElement.data(), Human::SteamIdElement.size());
-	if (steamIdNode == nullptr || !XmlHelper::TryGetUInt64(steamIdNode, human.SteamId))
-	{
-		return false;
-	}
+	stream.read(content.get(), fileSize);
+	content[bufferSize - 1] = '\0';
 
-	const XmlNode* const nameNode = node->first_node(Human::NameElement.data(), Human::NameElement.size());
-	if (nameNode == nullptr)
-	{
-		return false;
-	}
+	std::unique_ptr<XmlDocument> document = std::make_unique<XmlDocument>();
+	document->parse<rapidxml::parse_non_destructive>(content.get());
 
-	human.Name = std::string_view(nameNode->value(), nameNode->value_size());
-
-	const XmlNode* const stateNode = node->first_node(Human::StateElement.data(), Human::StateElement.size());
-	if (stateNode == nullptr)
-	{
-		return false;
-	}
-
-	human.State = std::string_view(stateNode->value(), stateNode->value_size());
-
-	const XmlNode* const positionNode = node->first_node(Human::PositionElement.data(), Human::PositionElement.size());
-	if (positionNode == nullptr || !XmlHelper::TryGetVector3(positionNode, human.Position))
-	{
-		return false;
-	}
-
-	const XmlNode* const rotationNode = node->first_node(Human::RotationElement.data(), Human::RotationElement.size());
-	if (rotationNode == nullptr || !XmlHelper::TryGetQuaternion(rotationNode, human.Rotation))
-	{
-		return false;
-	}
-
-	return true;
+	return StationExToolbox::WorldXmlDocument(std::move(content), std::move(document));
 }
 
-static XmlNode* GetThingContainerNode(const XmlDocument& document) noexcept
+XmlNode* StationExToolbox::WorldXmlDocument::TryGetAllThingsElement() const noexcept
 {
-	XmlNode* worldDataNode = document.first_node(WorldData::Element.data(), WorldData::Element.size());
+	const XmlNode* const worldDataNode = this->document->first_node(WorldDataElement.data(), WorldDataElement.size());
 	if (worldDataNode == nullptr)
 	{
 		return nullptr;
 	}
 
-	return worldDataNode->first_node(Things::Element.data(), Things::Element.size());
-}
-
-Error WorldXmlDocument::GetHumans(std::vector<Human>& humans) const noexcept
-{
-	const XmlNode* const things = GetThingContainerNode(this->document);
-	if (things == nullptr)
-	{
-		return Error::SaveFormatInvalid;
-	}
-
-	const XmlNode* thingNode = things->first_node(Human::Element.data(), Human::Element.size());
-	while (thingNode != nullptr)
-	{
-		const XmlAttribute* const thingTypeAttribute = thingNode->first_attribute("xsi:type");
-		if (thingTypeAttribute != nullptr && std::string_view(thingTypeAttribute->value(), thingTypeAttribute->value_size()) == Human::ElementType)
-		{
-			Human human;
-			if (!ReadHumanFromNode(thingNode, human))
-			{
-				return Error::EntityFormatInvalid;
-			}
-
-			humans.push_back(std::move(human));
-		}
-
-		thingNode = thingNode->next_sibling(Human::Element.data(), Human::Element.size());
-	}
-
-	return Error::None;
-}
-
-Error WorldXmlDocument::GetHumanByReferenceId(const std::uint64_t referenceId, Human& human) const noexcept
-{
-	const XmlNode* const things = GetThingContainerNode(this->document);
-	if (things == nullptr)
-	{
-		return Error::SaveFormatInvalid;
-	}
-
-	const XmlNode* thingNode = things->first_node(Human::Element.data(), Human::Element.size());
-	while (thingNode != nullptr)
-	{
-		const XmlAttribute* const thingTypeAttribute = thingNode->first_attribute("xsi:type");
-		if (thingTypeAttribute != nullptr && std::string_view(thingTypeAttribute->value(), thingTypeAttribute->value_size()) == Human::ElementType)
-		{
-			if (!ReadHumanFromNode(thingNode, human))
-			{
-				return Error::EntityFormatInvalid;
-			}
-
-			if (human.ReferenceId == referenceId)
-			{
-				return Error::None;
-			}
-		}
-
-		thingNode = thingNode->next_sibling(Human::Element.data(), Human::Element.size());
-	}
-
-	return Error::EntityNotFound;
+	return worldDataNode->first_node(AllThingsElement.data(), AllThingsElement.size());
 }

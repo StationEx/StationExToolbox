@@ -18,7 +18,7 @@ namespace StationExToolbox
 	{
 		public:
 		[[nodiscard]]
-		static bool TryParseContent(XmlDocument& document, char const* const content) noexcept
+		static inline bool TryParseContent(XmlDocument& document, char const* const content) noexcept
 		{
 			try
 			{
@@ -33,13 +33,7 @@ namespace StationExToolbox
 		}
 
 		[[nodiscard]]
-		static inline XmlNode* TryGetElementByName(const XmlNode* const root, std::string_view name) noexcept
-		{
-			return root->first_node(name.data(), name.size());
-		}
-
-		[[nodiscard]]
-		static bool TryGetUInt64(const XmlNode* const node, std::uint64_t& value) noexcept
+		static inline bool TryGetUInt64(const XmlNode* const node, std::uint64_t& value) noexcept
 		{
 			const char* const nodeValueEnd = node->value() + node->value_size();
 			auto [ptr, ec] = std::from_chars(node->value(), nodeValueEnd, value);
@@ -48,7 +42,7 @@ namespace StationExToolbox
 		}
 
 		[[nodiscard]]
-		static bool TryGetFloat(const XmlNode* const node, float& value) noexcept
+		static inline bool TryGetFloat(const XmlNode* const node, float& value) noexcept
 		{
 			const char* const nodeValueEnd = node->value() + node->value_size();
 			auto [ptr, ec] = std::from_chars(node->value(), nodeValueEnd, value);
@@ -57,7 +51,7 @@ namespace StationExToolbox
 		}
 
 		[[nodiscard]]
-		static bool TryGetVector3(const XmlNode* const node, Vector3& value) noexcept
+		static inline bool TryGetVector3(const XmlNode* const node, Vector3& value) noexcept
 		{
 			const XmlNode* const xNode = node->first_node(Vector3::XElement.data(), Vector3::XElement.size());
 			if (xNode == nullptr || !TryGetFloat(xNode, value.X))
@@ -81,7 +75,7 @@ namespace StationExToolbox
 		}
 
 		[[nodiscard]]
-		static bool TryGetQuaternion(const XmlNode* const node, Quaternion& value) noexcept
+		static inline bool TryGetQuaternion(const XmlNode* const node, Quaternion& value) noexcept
 		{
 			const XmlNode* const xNode = node->first_node(Quaternion::XElement.data(), Quaternion::XElement.size());
 			if (xNode == nullptr || !TryGetFloat(xNode, value.X))
