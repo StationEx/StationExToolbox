@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="StationExToolbox.cpp" />
+    <ClCompile Include="StructureSaveData.cpp" />
     <ClCompile Include="ThingSaveData.cpp" />
     <ClCompile Include="WorldXmlDocument.cpp" />
     <ClCompile Include="WorldXmlReader.cpp" />
@@ -87,6 +88,7 @@
     <ClInclude Include="Error.h" />
     <ClInclude Include="Human.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="StructureSaveData.h" />
     <ClInclude Include="Things.h" />
     <ClInclude Include="ThingSaveData.h" />
     <ClInclude Include="Vector3.h" />

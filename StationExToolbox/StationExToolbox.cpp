@@ -19,7 +19,8 @@ static void ThingsListCommand()
 
 	for (const ThingSaveData thing : things)
 	{
-		std::println("[{}:{}]", thing.GetType(), thing.GetReferenceId());
+		std::println("[{}:{}] \"{}\" is at {}",
+			thing.GetType(), thing.GetReferenceId(), thing.GetCustomName(), thing.GetWorldPosition());
 	}
 }
 
@@ -52,7 +53,7 @@ static void PlayersCommand(args::Subparser& parser)
 	}
 }
 
-int main(int argc, const char* const argv[])
+int main(const int argc, const char* const argv[])
 {
 	args::ArgumentParser parser("StationEx Toolbox - A utility for manipulating your Stationeers saves.");
 

@@ -9,21 +9,11 @@ using namespace std::string_view_literals;
 
 static constexpr std::string_view ElementType = "xsi:type"sv;
 static constexpr std::string_view ReferenceIdElement = "ReferenceId"sv;
+static constexpr std::string_view OwnerSteamIdElement = "OwnerSteamId"sv;
 static constexpr std::string_view PrefabNameElement = "PrefabName"sv;
 static constexpr std::string_view CustomNameElement = "CustomName"sv;
 static constexpr std::string_view WorldPositionElement = "WorldPosition"sv;
 static constexpr std::string_view WorldRotationElement = "WorldRotation"sv;
-
-std::string_view StationExToolbox::ThingSaveData::GetType() const
-{
-	std::string_view type;
-	if (TryGetType(type))
-	{
-		return type;
-	}
-
-	throw std::runtime_error("Failed to read ThingSaveData.Type because the element is missing or improperly formatted.");
-}
 
 bool StationExToolbox::ThingSaveData::TryGetType(std::string_view& type) const noexcept
 {
@@ -37,15 +27,15 @@ bool StationExToolbox::ThingSaveData::TryGetType(std::string_view& type) const n
 	return true;
 }
 
-std::uint64_t StationExToolbox::ThingSaveData::GetReferenceId() const
+std::string_view StationExToolbox::ThingSaveData::GetType() const
 {
-	uint64_t referenceId;
-	if (TryGetReferenceId(referenceId))
+	std::string_view type;
+	if (this->TryGetType(type))
 	{
-		return referenceId;
+		return type;
 	}
 
-	throw std::runtime_error("Failed to read ThingSaveData.ReferenceId because the element is missing or improperly formatted.");
+	throw std::runtime_error("Failed to read ThingSaveData Type because the element is missing or improperly formatted.");
 }
 
 bool StationExToolbox::ThingSaveData::TryGetReferenceId(std::uint64_t& referenceId) const noexcept
@@ -59,15 +49,37 @@ bool StationExToolbox::ThingSaveData::TryGetReferenceId(std::uint64_t& reference
 	return XmlHelper::TryGetUInt64(referenceIdNode, referenceId);
 }
 
-std::string_view StationExToolbox::ThingSaveData::GetPrefabName() const
+std::uint64_t StationExToolbox::ThingSaveData::GetReferenceId() const
 {
-	std::string_view prefabName;
-	if (TryGetPrefabName(prefabName))
+	uint64_t referenceId;
+	if (this->TryGetReferenceId(referenceId))
 	{
-		return prefabName;
+		return referenceId;
 	}
 
-	throw std::runtime_error("Failed to read ThingSaveData.PrefabName because the element is missing or improperly formatted.");
+	throw std::runtime_error("Failed to read ThingSaveData ReferenceId because the element is missing or improperly formatted.");
+}
+
+bool StationExToolbox::ThingSaveData::TryGetOwnerSteamId(std::uint64_t& ownerSteamId) const noexcept
+{
+	const XmlNode* const ownerSteamIdNode = this->root->first_node(OwnerSteamIdElement.data(), OwnerSteamIdElement.size());
+	if (ownerSteamIdNode == nullptr)
+	{
+		return false;
+	}
+
+	return XmlHelper::TryGetUInt64(ownerSteamIdNode, ownerSteamId);
+}
+
+std::uint64_t StationExToolbox::ThingSaveData::GetOwnerSteamId() const
+{
+	std::uint64_t ownerSteamId;
+	if (this->TryGetOwnerSteamId(ownerSteamId))
+	{
+		return ownerSteamId;
+	}
+
+	throw std::runtime_error("Failed to read ThingSaveData OwnerSteamId because the element is missing or improperly formatted.");
 }
 
 bool StationExToolbox::ThingSaveData::TryGetPrefabName(std::string_view& prefabName) const noexcept
@@ -82,15 +94,15 @@ bool StationExToolbox::ThingSaveData::TryGetPrefabName(std::string_view& prefabN
 	return true;
 }
 
-std::string_view StationExToolbox::ThingSaveData::GetCustomName() const
+std::string_view StationExToolbox::ThingSaveData::GetPrefabName() const
 {
-	std::string_view customName;
-	if (TryGetCustomName(customName))
+	std::string_view prefabName;
+	if (this->TryGetPrefabName(prefabName))
 	{
-		return customName;
+		return prefabName;
 	}
 
-	throw std::runtime_error("Failed to read ThingSaveData.CustomName because the element is missing or improperly formatted.");
+	throw std::runtime_error("Failed to read ThingSaveData PrefabName because the element is missing or improperly formatted.");
 }
 
 bool StationExToolbox::ThingSaveData::TryGetCustomName(std::string_view& customName) const noexcept
@@ -105,15 +117,15 @@ bool StationExToolbox::ThingSaveData::TryGetCustomName(std::string_view& customN
 	return true;
 }
 
-StationExToolbox::Vector3 StationExToolbox::ThingSaveData::GetWorldPosition() const
+std::string_view StationExToolbox::ThingSaveData::GetCustomName() const
 {
-	Vector3 worldPosition;
-	if (TryGetWorldPosition(worldPosition))
+	std::string_view customName;
+	if (this->TryGetCustomName(customName))
 	{
-		return worldPosition;
+		return customName;
 	}
 
-	throw std::runtime_error("Failed to read ThingSaveData.WorldPosition because the element is missing or improperly formatted.");
+	return std::string_view();
 }
 
 bool StationExToolbox::ThingSaveData::TryGetWorldPosition(Vector3& worldPosition) const noexcept
@@ -127,15 +139,15 @@ bool StationExToolbox::ThingSaveData::TryGetWorldPosition(Vector3& worldPosition
 	return XmlHelper::TryGetVector3(worldPositionNode, worldPosition);
 }
 
-StationExToolbox::Quaternion StationExToolbox::ThingSaveData::GetWorldRotation() const
+StationExToolbox::Vector3 StationExToolbox::ThingSaveData::GetWorldPosition() const
 {
-	Quaternion worldRotation;
-	if (TryGetWorldRotation(worldRotation))
+	Vector3 worldPosition;
+	if (this->TryGetWorldPosition(worldPosition))
 	{
-		return worldRotation;
+		return worldPosition;
 	}
 
-	throw std::runtime_error("Failed to read ThingSaveData.WorldRotation because the element is missing or improperly formatted.");
+	throw std::runtime_error("Failed to read ThingSaveData WorldPosition because the element is missing or improperly formatted.");
 }
 
 bool StationExToolbox::ThingSaveData::TryGetWorldRotation(Quaternion& worldRotation) const noexcept
@@ -147,4 +159,15 @@ bool StationExToolbox::ThingSaveData::TryGetWorldRotation(Quaternion& worldRotat
 	}
 
 	return XmlHelper::TryGetQuaternion(worldRotationNode, worldRotation);
+}
+
+StationExToolbox::Quaternion StationExToolbox::ThingSaveData::GetWorldRotation() const
+{
+	Quaternion worldRotation;
+	if (this->TryGetWorldRotation(worldRotation))
+	{
+		return worldRotation;
+	}
+
+	throw std::runtime_error("Failed to read ThingSaveData WorldRotation because the element is missing or improperly formatted.");
 }

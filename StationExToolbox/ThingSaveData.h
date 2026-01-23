@@ -6,7 +6,7 @@ namespace StationExToolbox
 {
 	class ThingSaveData
 	{
-		private:
+		protected:
 		const XmlNode* const root;
 
 		public:
@@ -16,34 +16,39 @@ namespace StationExToolbox
 
 		}
 
+		[[nodiscard]]
+		bool TryGetType(std::string_view& type) const noexcept;
+
 		std::string_view GetType() const;
 
 		[[nodiscard]]
-		bool TryGetType(std::string_view& type) const noexcept;
+		bool TryGetReferenceId(std::uint64_t& referenceId) const noexcept;
 
 		std::uint64_t GetReferenceId() const;
 
 		[[nodiscard]]
-		bool TryGetReferenceId(std::uint64_t& referenceId) const noexcept;
-		
-		std::string_view GetPrefabName() const;
+		bool TryGetOwnerSteamId(std::uint64_t& ownerSteamId) const noexcept;
+
+		std::uint64_t GetOwnerSteamId() const;
 
 		[[nodiscard]]
 		bool TryGetPrefabName(std::string_view& prefabName) const noexcept;
 
-		std::string_view GetCustomName() const;
+		std::string_view GetPrefabName() const;
 
 		[[nodiscard]]
 		bool TryGetCustomName(std::string_view& customName) const noexcept;
 
-		Vector3 GetWorldPosition() const;
+		std::string_view GetCustomName() const;
 
 		[[nodiscard]]
 		bool TryGetWorldPosition(Vector3& worldPosition) const noexcept;
 
-		Quaternion GetWorldRotation() const;
+		Vector3 GetWorldPosition() const;
 
 		[[nodiscard]]
 		bool TryGetWorldRotation(Quaternion& worldRotation) const noexcept;
+
+		Quaternion GetWorldRotation() const;
 	};
 }

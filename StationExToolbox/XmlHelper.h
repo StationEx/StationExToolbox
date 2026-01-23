@@ -32,6 +32,14 @@ namespace StationExToolbox
 			return true;
 		}
 
+		static inline bool TryGetUInt32(const XmlNode* const node, std::uint32_t& value) noexcept
+		{
+			const char* const nodeValueEnd = node->value() + node->value_size();
+			auto [ptr, ec] = std::from_chars(node->value(), nodeValueEnd, value);
+
+			return (ec == std::errc() && ptr == nodeValueEnd);
+		}
+
 		[[nodiscard]]
 		static inline bool TryGetUInt64(const XmlNode* const node, std::uint64_t& value) noexcept
 		{
