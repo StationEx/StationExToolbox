@@ -78,6 +78,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DynamicThingSaveData.cpp" />
+    <ClCompile Include="EntitySaveData.cpp" />
+    <ClCompile Include="HumanSaveData.cpp" />
     <ClCompile Include="StationExToolbox.cpp" />
     <ClCompile Include="StructureSaveData.cpp" />
     <ClCompile Include="ThingSaveData.cpp" />
@@ -85,8 +88,12 @@
     <ClCompile Include="WorldXmlReader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DynamicThingSaveData.h" />
+    <ClInclude Include="EntitySaveData.h" />
+    <ClInclude Include="EntityState.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="Human.h" />
+    <ClInclude Include="HumanSaveData.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="StructureSaveData.h" />
     <ClInclude Include="Things.h" />

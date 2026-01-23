@@ -31,7 +31,7 @@ std::uint32_t StationExToolbox::StructureSaveData::GetCurrentBuildState() const
 	throw std::runtime_error("Failed to read StructureSaveData CurrentBuildState because the element is missing or improperly formatted.");
 }
 
-bool StationExToolbox::StructureSaveData::TryGetRegisteredWorldPosition(StationExToolbox::Vector3& registeredWorldPosition) const noexcept
+bool StationExToolbox::StructureSaveData::TryGetRegisteredWorldPosition(Vector3& registeredWorldPosition) const noexcept
 {
 	const XmlNode* const registeredWorldPositionNode = this->root->first_node(RegisteredWorldPositionElement.data(), RegisteredWorldPositionElement.size());
 	if (registeredWorldPositionNode == nullptr)
@@ -53,7 +53,7 @@ StationExToolbox::Vector3 StationExToolbox::StructureSaveData::GetRegisteredWorl
 	throw std::runtime_error("Failed to read StructureSaveData RegisteredWorldPosition because the element is missing or improperly formatted.");
 }
 
-bool StationExToolbox::StructureSaveData::TryGetRegisteredWorldRotation(StationExToolbox::Quaternion& registeredWorldRotation) const noexcept
+bool StationExToolbox::StructureSaveData::TryGetRegisteredWorldRotation(Quaternion& registeredWorldRotation) const noexcept
 {
 	const XmlNode* const registeredWorldRotationNode = this->root->first_node(RegisteredWorldRotationElement.data(), RegisteredWorldRotationElement.size());
 	if (registeredWorldRotationNode == nullptr)

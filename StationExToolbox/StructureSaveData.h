@@ -9,7 +9,7 @@
 
 namespace StationExToolbox
 {
-	class StructureSaveData : ThingSaveData
+	class StructureSaveData : public ThingSaveData
 	{
 		public:
 		inline StructureSaveData(const XmlNode* const root) noexcept
