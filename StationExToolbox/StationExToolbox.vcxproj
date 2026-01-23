@@ -91,15 +91,11 @@
     <ClInclude Include="DynamicThingSaveData.h" />
     <ClInclude Include="EntitySaveData.h" />
     <ClInclude Include="EntityState.h" />
-    <ClInclude Include="Error.h" />
-    <ClInclude Include="Human.h" />
     <ClInclude Include="HumanSaveData.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="StructureSaveData.h" />
-    <ClInclude Include="Things.h" />
     <ClInclude Include="ThingSaveData.h" />
     <ClInclude Include="Vector3.h" />
-    <ClInclude Include="WorldData.h" />
     <ClInclude Include="WorldXmlDocument.h" />
     <ClInclude Include="WorldXmlReader.h" />
     <ClInclude Include="XmlHelper.h" />

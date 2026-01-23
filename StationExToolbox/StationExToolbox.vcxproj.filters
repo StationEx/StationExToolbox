@@ -44,18 +44,6 @@
     <ClInclude Include="WorldXmlDocument.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Human.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WorldData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Things.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vector3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
